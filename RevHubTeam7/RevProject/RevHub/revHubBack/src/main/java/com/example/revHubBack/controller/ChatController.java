@@ -23,9 +23,13 @@ public class ChatController {
             String receiverUsername = request.get("receiverUsername");
             String content = request.get("content");
             
+            System.out.println("Sending message from: " + authentication.getName() + " to: " + receiverUsername);
+            
             ChatMessage message = chatService.sendMessage(authentication.getName(), receiverUsername, content);
             return ResponseEntity.ok(message);
         } catch (RuntimeException e) {
+            System.err.println("Error sending message: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
