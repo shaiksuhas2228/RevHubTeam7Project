@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'version1', url: env.GITHUB_REPO
+                git branch: 'master', url: env.GITHUB_REPO
             }
         }
         
