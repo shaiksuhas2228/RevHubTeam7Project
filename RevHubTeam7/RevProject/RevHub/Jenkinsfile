@@ -23,9 +23,11 @@ pipeline {
             steps {
                 bat 'docker build -t revhub-backend ./RevHubTeam7/RevProject/RevHub/revHubBack'
                 bat 'docker build -t revhub-frontend ./RevHubTeam7/RevProject/RevHub/RevHub/RevHub'
-                bat 'docker rm -f backend frontend || echo "No containers to remove"'
+                bat 'docker rm -f backend frontend mongodb || echo "No containers to remove"'
+                bat 'docker run -d --name mongodb -p 27017:27017 mongo:latest'
                 bat '''docker run -d --name backend ^
-                    --add-host=host.docker.internal:host-gateway ^
+                    --link mongodb:mongodb ^
+                    -e MONGO_URI=mongodb://mongodb:27017/revhubteam4 ^
                     --env-file ./RevHubTeam7/RevProject/RevHub/backend.env.properties ^
                     -p 8080:8080 revhub-backend'''
                 bat 'docker run -d --name frontend -p 4200:80 revhub-frontend'
@@ -57,7 +59,7 @@ pipeline {
             echo 'Frontend: http://localhost:4200'
         }
         failure {
-            bat 'docker rm -f backend frontend || echo "No containers to stop"'
+            bat 'docker rm -f backend frontend mongodb || echo "No containers to stop"'
             echo 'Pipeline failed!'
         }
         cleanup {
